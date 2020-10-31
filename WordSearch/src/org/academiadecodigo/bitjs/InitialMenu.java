@@ -3,46 +3,57 @@ package org.academiadecodigo.bitjs;
 import org.academiadecodigo.bootcamp.Prompt;
 import org.academiadecodigo.bootcamp.scanners.integer.IntegerInputScanner;
 import org.academiadecodigo.bootcamp.scanners.integer.IntegerRangeInputScanner;
+import org.academiadecodigo.bootcamp.scanners.menu.MenuInputScanner;
 import org.academiadecodigo.bootcamp.scanners.string.StringInputScanner;
 
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.net.Socket;
+
 public class InitialMenu {
-    //TODO MENU
-    private String name;
-    private String color;
     private Prompt menuPrompt;
-    private ServerMessages message;
-    private GameManager gameManager;
 
-    public static void main(String[] args) {
-        InitialMenu menu= new InitialMenu(new GameManager());
-        menu.StartMenu();
-
-    }
-    public InitialMenu(GameManager gameManager){
-        this.menuPrompt=new Prompt(System.in,System.out);
-        this.gameManager= gameManager;
-
+    public InitialMenu(Socket clientSocket) throws IOException {
+        this.menuPrompt = new Prompt(clientSocket.getInputStream(), new PrintStream(clientSocket.getOutputStream()));
     }
 
-    public void chooseName (){
-        StringInputScanner nameQuestion= new StringInputScanner();
+    public String chooseName() {
+        StringInputScanner nameQuestion = new StringInputScanner();
         nameQuestion.setMessage(ServerMessages.nameQuestion);
-        String playerName=this.menuPrompt.getUserInput(nameQuestion);
-
+        return this.menuPrompt.getUserInput(nameQuestion);
     }
-    public void chooseColor(){
-        IntegerInputScanner colorIntRange = new IntegerRangeInputScanner(1, 5);
-        colorIntRange.setError(ServerMessages.colorError);
-        colorIntRange.setMessage(ServerMessages.colorQuestion);
-        System.out.println(ServerMessages.introColors);
-        System.out.println(ServerMessages.colorOptions);
-        int playerColor= this.menuPrompt.getUserInput(colorIntRange);
 
+    public int chooseColor() {
+        String[] options = ServerMessages.colorOptions;
+        MenuInputScanner scanner = new MenuInputScanner(options);
+        scanner.setMessage(ServerMessages.colorQuestion);
+        scanner.setError(ServerMessages.colorError);
+        return menuPrompt.getUserInput(scanner);
     }
-    public void StartMenu(){
-        System.out.println(ServerMessages.welcome);
-        chooseName();
-        chooseColor();
 
+    public void printTitle(PrintWriter socketWriter) {
+        /*socketWriter.print("       __        __            _   ____                      _     \n" +
+                "        \\ \\      / ___  _ __ __| | / ___|  ___  __ _ _ __ ___| |__  \n" +
+                "         \\ \\ /\\ / / _ \\| '__/ _` | \\___ \\ / _ \\/ _` | '__/ __| '_ \\ \n" +
+                "          \\ V  V | (_) | | | (_| |  ___) |  __| (_| | | | (__| | | |\n" +
+                "           \\_/\\_/ \\___/|_|  \\__,_| |____/ \\___|\\__,_|_|  \\___|_| |_|\n" +
+                "                                                             \n"
+
+
+        );*/
+
+        socketWriter.print(Colors.TITLE.concat(
+                "██╗    ██╗██████╗██████╗██████╗     ██████████████╗█████╗██████╗ ████████╗  ██╗\n" +
+                        "██║    ████╔═══████╔══████╔══██╗    ██╔════██╔════██╔══████╔══████╔════██║  ██║\n" +
+                        "██║ █╗ ████║   ████████╔██║  ██║    ████████████╗ █████████████╔██║    ███████║\n" +
+                        "██║███╗████║   ████╔══████║  ██║    ╚════████╔══╝ ██╔══████╔══████║    ██╔══██║\n" +
+                        "╚███╔███╔╚██████╔██║  ████████╔╝    ████████████████║  ████║  ██╚████████║  ██║\n" +
+                        " ╚══╝╚══╝ ╚═════╝╚═╝  ╚═╚═════╝     ╚══════╚══════╚═╝  ╚═╚═╝  ╚═╝╚═════╚═╝  ╚═╝" +
+                        "\n\n"
+        ));
+
+        socketWriter.flush();
     }
+
 }

@@ -38,7 +38,13 @@ public class GameManager {
 
         PlayerHandler player = new PlayerHandler(clientSocket, this);
         fixedThreadPool.submit(player);
-        listPlayers.add(player);
+        addPlayer(player);
+    }
+
+    public void printBoard() {
+        for (PlayerHandler player : listPlayers) {
+            GameBoard.printGameCard(player.getSocketWriter());
+        }
     }
 
     public void addPlayer(PlayerHandler player) {
@@ -49,12 +55,20 @@ public class GameManager {
         listPlayers.remove(player);
     }
 
-    public boolean checkUsernameExists(String username) {
-        synchronized (this) {
-            for (PlayerHandler player : listPlayers) {
-                if (username.equals(player.getName())) {
-                    return true;
-                }
+    public synchronized boolean checkUsernameExists(String username) {   //true = existe
+        for (PlayerHandler player : listPlayers) {
+            if (username.equals(player.getName())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public synchronized boolean checkColorExists(String color) {   //true = existe
+        for (PlayerHandler player : listPlayers) {
+            if (color.equals(player.getColor())) {
+                return true;
             }
         }
 
