@@ -12,11 +12,11 @@ import java.util.concurrent.Executors;
 public class GameManager {
     public static final int DEFAULT_PORT = 10000;
     private ServerSocket serverSocket;
-    private List<PlayerHandler> players;
+    private List<PlayerHandler> listPlayers;
     private ExecutorService fixedThreadPool;
 
     public GameManager() {
-        players = Collections.synchronizedList(new LinkedList<>());
+        listPlayers = Collections.synchronizedList(new LinkedList<>());
         fixedThreadPool = Executors.newFixedThreadPool(4);
     }
 
@@ -36,6 +36,28 @@ public class GameManager {
     private void waitPlayers(ServerSocket serverSocket) throws IOException {
         Socket clientSocket = serverSocket.accept();
 
-        fixedThreadPool.submit(new PlayerHandler(clientSocket, this));
+        PlayerHandler player = new PlayerHandler(clientSocket, this);
+        fixedThreadPool.submit(player);
+        listPlayers.add(player);
+    }
+
+    public void addPlayer(PlayerHandler player) {
+        listPlayers.add(player);
+    }
+
+    public void removePlayer(PlayerHandler player) {
+        listPlayers.remove(player);
+    }
+
+    public boolean checkUsernameExists(String username) {
+        synchronized (this) {
+            for (PlayerHandler player : listPlayers) {
+                if (username.equals(player.getName())) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

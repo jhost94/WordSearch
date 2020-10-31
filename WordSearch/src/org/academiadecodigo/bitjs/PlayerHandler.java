@@ -18,6 +18,8 @@ public class PlayerHandler implements Runnable{
     public void run() {
         try {
             init();
+
+
         } catch (IOException ex) {
             ex.getStackTrace();
         }
@@ -25,5 +27,9 @@ public class PlayerHandler implements Runnable{
 
     private void init() throws IOException {
 
+    }
+
+    public String getName() {
+        return name;
     }
 }
