@@ -3,6 +3,7 @@ package org.academiadecodigo.bitjs.game.server;
 import org.academiadecodigo.bitjs.game.AnswerCoordinate;
 import org.academiadecodigo.bitjs.game.Color;
 import org.academiadecodigo.bitjs.game.InitialMenu;
+import org.academiadecodigo.bitjs.game.server.Commands.Command;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -71,10 +72,16 @@ public class PlayerHandler implements Runnable {
 
     public void receiveAnswers() throws IOException {
         String message = socketReader.readLine();
+        if (message.startsWith("/")){
+            Command.checkCommand(message,this);
+            receiveAnswers();
+            return;
+        }
         System.out.println(message);
 
         String[] splitMessage = message.split(" ");
         AnswerCoordinate answerCoordinate = AnswerCoordinate.values()[Integer.parseInt(splitMessage[0]) - 1];
+
 
         if (!answerCoordinate.isAnswered()) {
             System.out.println("0 = " + splitMessage[0] + " 1 = " + splitMessage[1] + " 2 = " + splitMessage[2]);
@@ -106,9 +113,6 @@ public class PlayerHandler implements Runnable {
 
         socketWriter.println("\n" + ServerMessages.alreadyAnswered);
         //Commands(message);
-        //if (!(message.startsWith("/"))) {
-        // server.broadcast(message, this);
-        //}
     }
 
 //    private boolean verifyValidAnswer(String[] splitMessage) {

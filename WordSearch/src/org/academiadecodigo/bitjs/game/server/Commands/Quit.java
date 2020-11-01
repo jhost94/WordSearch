@@ -12,10 +12,11 @@ public class Quit implements CommandHandler{
             player.closeStreams();
             player.getServer().removePlayer(player);
             for (PlayerHandler p : player.getServer().getListPlayers()){
-                if (p.getName() == player.getName()){
-                    continue;
-                }
-                p.getSocketWriter().write(player.getColor().concat(p.getName()) + " has left the game.");
+            //    if (p.getName().equals(player.getName())){
+             //       continue;
+              //  }
+                p.getSocketWriter().write(player.getColor().concat(player.getName()) + " has left the game.");
+                p.getSocketWriter().flush();
             }
         } catch (IOException e){
             System.out.println(e.getMessage());
