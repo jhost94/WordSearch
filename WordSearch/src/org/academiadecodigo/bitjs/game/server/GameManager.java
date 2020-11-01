@@ -7,9 +7,7 @@ import org.academiadecodigo.bitjs.game.GameBoard;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -129,6 +127,17 @@ public class GameManager {
         for (PlayerHandler listPlayer : listPlayers) {
             listPlayer.printInitialGameSet();
         }
+    }
+
+    public synchronized void endGame() throws IOException {
+        for (PlayerHandler player : listPlayers) {
+            for (PlayerHandler listPlayer : listPlayers) {
+                player.getSocketWriter().println(listPlayer.getColor().concat(listPlayer.getName()) + ": " + listPlayer.getPoints() + " points");
+                player.getSocketWriter().flush();
+            }
+            player.closeStreams();
+        }
+        listPlayers.removeAll(listPlayers);
     }
 
     public List<PlayerHandler> getListPlayers(){
