@@ -9,8 +9,6 @@ public enum Command {
     POINTSLIST("/pointslist", new PointsList()),
     COMMANDS("/commands", new Commands()),
     QUIT("/quit", new Quit());
-    //CONTROLQUIT(null, new Quit()),
-    //INVALIDCOMMAND("/",     );
 
     private String command;
     private CommandHandler commandHandler;

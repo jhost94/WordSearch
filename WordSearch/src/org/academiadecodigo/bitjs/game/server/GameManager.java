@@ -7,9 +7,7 @@ import org.academiadecodigo.bitjs.game.GameBoard;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -49,14 +47,20 @@ public class GameManager {
 
     public void printBoard() {
         for (PlayerHandler player : listPlayers) {
+            player.getSocketWriter().println("\033[H\033[2J"); //Condition to clear the screen
+            player.getSocketWriter().flush();
             player.getInitialMenu().printTitle(player.getSocketWriter());
             GameBoard.printGameCard(player.getSocketWriter());
             player.printQuestions();
+            player.getSocketWriter().println(ServerMessages.GUESS);
+            player.getSocketWriter().flush();
         }
     }
 
     public void initialPrintBoard(PlayerHandler player) {
         GameBoard.printGameCard(player.getSocketWriter());
+
+
     }
 
     public void addPlayer(PlayerHandler player) {
@@ -129,7 +133,19 @@ public class GameManager {
         }
     }
 
-    public List<PlayerHandler> getListPlayers(){
+    public synchronized void endGame() throws IOException {
+        Collections.sort(listPlayers, PlayerHandler::compareTo);
+        for (PlayerHandler player : listPlayers) {
+            for (PlayerHandler listPlayer : listPlayers) {
+                player.getSocketWriter().println(listPlayer.getColor().concat(listPlayer.getName()) + ": " + listPlayer.getPoints() + " points");
+                player.getSocketWriter().flush();
+            }
+            player.closeStreams();
+        }
+        listPlayers.removeAll(listPlayers);
+    }
+
+    public List<PlayerHandler> getListPlayers() {
         return listPlayers;
     }
 
