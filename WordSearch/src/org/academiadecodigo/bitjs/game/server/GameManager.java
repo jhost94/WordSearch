@@ -85,7 +85,7 @@ public class GameManager {
     }
 
     public synchronized void broadcast(String[] splitMessage, PlayerHandler sender) {
-        AnswerCoordinate answerCoordinate = AnswerCoordinate.values()[Integer.parseInt(splitMessage[0])];
+        AnswerCoordinate answerCoordinate = AnswerCoordinate.values()[Integer.parseInt(splitMessage[0]) - 1];
 
         GameBoard.verifyOrientation(splitMessage, answerCoordinate.getOrientation(), sender);
         printBoard();

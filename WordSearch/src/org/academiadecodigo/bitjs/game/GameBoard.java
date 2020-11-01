@@ -83,9 +83,9 @@ public class GameBoard {
                 return ANSWER_4;
             case 5:
                 return ANSWER_5;
-            case 6:
+            default:
                 return ANSWER_6;
         }
-        return null;
+        //return null;
     }
 }

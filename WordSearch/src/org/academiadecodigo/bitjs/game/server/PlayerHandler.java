@@ -2,6 +2,7 @@ package org.academiadecodigo.bitjs.game.server;
 
 import org.academiadecodigo.bitjs.game.AnswerCoordinate;
 import org.academiadecodigo.bitjs.game.Color;
+import org.academiadecodigo.bitjs.game.GameBoard;
 import org.academiadecodigo.bitjs.game.InitialMenu;
 
 import java.io.BufferedReader;
@@ -70,13 +71,13 @@ public class PlayerHandler implements Runnable {
 
     public void receiveAnswers() throws IOException {
         String message = socketReader.readLine();
-        System.out.println(message);
+        //System.out.println(GameBoard.ANSWER_6[0] + " " + GameBoard.ANSWER_6[10]);
+        //System.out.println(GameBoard.board[3][2] + " " + GameBoard.board[13][2]);
 
         String[] splitMessage = message.split(" ");
         AnswerCoordinate answerCoordinate = AnswerCoordinate.values()[Integer.parseInt(splitMessage[0]) - 1];
 
         if (!answerCoordinate.isAnswered()) {
-            System.out.println("0 = " + splitMessage[0] + " 1 = " + splitMessage[1] + " 2 = " + splitMessage[2]);
 
             if (!verifyLengthAndQuestionNumber(Integer.parseInt(splitMessage[0]), splitMessage.length)) {
                 //invalid answer message
@@ -117,11 +118,10 @@ public class PlayerHandler implements Runnable {
 //    }
 
     private boolean verifyAnswerCoordinates(String[] splitMessage, AnswerCoordinate answerCoordinate) {
-        //AnswerCoordinate answerCoordinate = AnswerCoordinate.values()[Integer.parseInt(splitMessage[0]) - 1];
-
-        if (!splitMessage[1].equals(answerCoordinate.getInitialCoordinate()) && !splitMessage[2].equals(answerCoordinate.getFinalCoordinate())) {
+        if (!(splitMessage[1].equals(answerCoordinate.getInitialCoordinate()) && splitMessage[2].equals(answerCoordinate.getFinalCoordinate()))) {
             return false;
         }
+
         return true;
     }
 
@@ -129,7 +129,7 @@ public class PlayerHandler implements Runnable {
         if (length != 3) {
             return false;
         }
-        if (questionNumber > 6 || questionNumber < 1) {
+        if (questionNumber >= 7 || questionNumber <= 0) {
             return false;
         }
         return true;
