@@ -77,4 +77,8 @@ public class GameManager {
 
         return false;
     }
+
+    public List<PlayerHandler> getListPlayers(){
+        return listPlayers;
+    }
 }
