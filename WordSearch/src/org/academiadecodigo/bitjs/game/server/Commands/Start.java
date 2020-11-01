@@ -2,6 +2,8 @@ package org.academiadecodigo.bitjs.game.server.Commands;
 
 import org.academiadecodigo.bitjs.game.server.PlayerHandler;
 
+import java.io.IOException;
+
 
 public class Start implements CommandHandler{
     @Override
@@ -11,7 +13,11 @@ public class Start implements CommandHandler{
             player.getSocketWriter().flush();
         }
         for (PlayerHandler p : player.getServer().getListPlayers()){
-            p.start();
+            try{
+                p.start();
+            } catch (IOException e){
+                System.out.println(e.getMessage());
+            }
         }
     }
 }

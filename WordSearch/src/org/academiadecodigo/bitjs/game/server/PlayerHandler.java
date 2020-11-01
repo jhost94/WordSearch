@@ -1,5 +1,6 @@
 package org.academiadecodigo.bitjs.game.server;
 
+import org.academiadecodigo.bitjs.game.AnswerCoordinate;
 import org.academiadecodigo.bitjs.game.Color;
 import org.academiadecodigo.bitjs.game.InitialMenu;
 
@@ -18,6 +19,7 @@ public class PlayerHandler implements Runnable {
     private String name = null;
     private Color color;
     private Color boardColor;
+    private int points;
     //private String color;
 
     public PlayerHandler(Socket clientSocket, GameManager server) {
@@ -56,13 +58,82 @@ public class PlayerHandler implements Runnable {
         chooseColor();
     }
 
-    private void start() {
-        printGameSet();
+    public void start() throws IOException {
+        printInitialGameSet();
 
-        while (clientSocket.isConnected()) {
-            
+        while (!clientSocket.isClosed()) {
+            socketWriter.println("\nWRITE YOUR GUESS!!");
+            socketWriter.flush();
+            receiveAnswers();
         }
 
+    }
+
+    public void receiveAnswers() throws IOException {
+        String message = socketReader.readLine();
+        System.out.println(message);
+
+        String[] splitMessage = message.split(" ");
+        AnswerCoordinate answerCoordinate = AnswerCoordinate.values()[Integer.parseInt(splitMessage[0]) - 1];
+
+        if (!answerCoordinate.isAnswered()) {
+            System.out.println("0 = " + splitMessage[0] + " 1 = " + splitMessage[1] + " 2 = " + splitMessage[2]);
+
+            if (!verifyLengthAndQuestionNumber(Integer.parseInt(splitMessage[0]), splitMessage.length)) {
+                //invalid answer message
+                System.out.println("1 if");
+                socketWriter.println(ServerMessages.wrongImplementation);
+                socketWriter.flush();
+                receiveAnswers();
+                return;
+            }
+
+            if (!verifyAnswerCoordinates(splitMessage, answerCoordinate)) {
+                // incorrect answer message
+                System.out.println("2 if");
+                socketWriter.println(ServerMessages.wrongAnswer);
+                socketWriter.flush();
+                receiveAnswers();
+                return;
+            }
+
+            answerCoordinate.setAnswered(true);
+
+            System.out.println("to print board");
+            server.broadcast(splitMessage, this);
+            return;
+        }
+
+        socketWriter.println("\n" + ServerMessages.alreadyAnswered);
+        //Commands(message);
+        //if (!(message.startsWith("/"))) {
+        // server.broadcast(message, this);
+        //}
+    }
+
+//    private boolean verifyValidAnswer(String[] splitMessage) {
+//        System.out.println("0 = " + splitMessage[0] + "1 = " + splitMessage[1] + "2 = " + splitMessage[2] + "3 = " + splitMessage[3]);
+//
+//        return verifyLengthAndQuestionNumber(Integer.parseInt(splitMessage[0]), splitMessage.length);
+//    }
+
+    private boolean verifyAnswerCoordinates(String[] splitMessage, AnswerCoordinate answerCoordinate) {
+        //AnswerCoordinate answerCoordinate = AnswerCoordinate.values()[Integer.parseInt(splitMessage[0]) - 1];
+
+        if (!splitMessage[1].equals(answerCoordinate.getInitialCoordinate()) && !splitMessage[2].equals(answerCoordinate.getFinalCoordinate())) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean verifyLengthAndQuestionNumber(int questionNumber, int length) {
+        if (length != 3) {
+            return false;
+        }
+        if (questionNumber > 6 || questionNumber < 1) {
+            return false;
+        }
+        return true;
     }
 
     private void chooseName() {
@@ -86,8 +157,7 @@ public class PlayerHandler implements Runnable {
         }
         this.color = setColor;
     }*/
-
-    private void chooseColor(){
+    private void chooseColor() {
         Color setColor = Color.values()[initialMenu.chooseColor()];
 
         while (server.checkColorExists(setColor)) {
@@ -109,14 +179,15 @@ public class PlayerHandler implements Runnable {
         }
     }
 
-    private void closeStreams() throws IOException {
+    public void closeStreams() throws IOException {
         clientSocket.close();
     }
 
-    private void printGameSet() {
+    private void printInitialGameSet() {
         initialMenu.printTitle(socketWriter);
-        server.printBoard();
+        server.initialPrintBoard(this);
         printQuestions();
+        //server.printBoard();
     }
 
     public void printQuestions() {
@@ -128,7 +199,6 @@ public class PlayerHandler implements Runnable {
         socketWriter.flush();
     }
 
-
     public String getName() {
         return name;
     }
@@ -139,5 +209,13 @@ public class PlayerHandler implements Runnable {
 
     public PrintWriter getSocketWriter() {
         return socketWriter;
+    }
+
+    public GameManager getServer(){
+        return server;
+    }
+
+    public int getPoints(){
+        return points;
     }
 }
