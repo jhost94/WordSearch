@@ -6,7 +6,8 @@ public enum AnswerCoordinate {
     ANSWER_3("3","14,2", "14,12", "horizontal",false, 15),
     ANSWER_4("4","10,10", "12,10", "vertical",false, 10),
     ANSWER_5("5","2,14", "7,14", "vertical",false, 10),
-    ANSWER_6("6","3,2", "13,2", "vertical",false, 10);
+    ANSWER_6("6","3,2", "13,2", "vertical",false, 10),
+    ANSWER_DEFAULT("3","default", "default", "default",false, 0);
 
     private String questionNumber;
     private String initialCoordinate;

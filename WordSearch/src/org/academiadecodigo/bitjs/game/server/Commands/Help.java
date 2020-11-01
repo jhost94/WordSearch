@@ -1,12 +1,6 @@
 package org.academiadecodigo.bitjs.game.server.Commands;
-
-import org.academiadecodigo.bitjs.game.Color;
 import org.academiadecodigo.bitjs.game.server.PlayerHandler;
 import org.academiadecodigo.bitjs.game.server.ServerMessages;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
 
 public class Help implements CommandHandler {
     private String help;

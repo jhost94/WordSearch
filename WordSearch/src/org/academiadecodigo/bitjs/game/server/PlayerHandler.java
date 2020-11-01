@@ -11,7 +11,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class PlayerHandler implements Runnable {
+public class PlayerHandler implements Runnable, Comparable {
     private Socket clientSocket;
     private PrintWriter socketWriter;
     private BufferedReader socketReader;
@@ -83,8 +83,8 @@ public class PlayerHandler implements Runnable {
     public void start() throws IOException {
         System.out.println("start");
 
-        socketWriter.println(ServerMessages.GUESS);
-        socketWriter.flush();
+        /*socketWriter.println(ServerMessages.GUESS);
+        socketWriter.flush();*/
 
         while (!clientSocket.isClosed()) {
             receiveAnswers();
@@ -99,11 +99,16 @@ public class PlayerHandler implements Runnable {
     }
 
     public void receiveAnswers() throws IOException {
+
+
         String message = socketReader.readLine();
-        commandVerification(message);
+
+        if(commandVerification(message)){
+            return;
+        }
 
         String[] splitMessage = message.split(" ");
-        AnswerCoordinate defaultAnswer = AnswerCoordinate.ANSWER_1;
+        AnswerCoordinate defaultAnswer = AnswerCoordinate.ANSWER_DEFAULT;
 
         //This block verifies if the first element of the string array is a question number
         if (!defaultAnswer.verifyQuestionNumber(splitMessage[0])) {
@@ -146,15 +151,16 @@ public class PlayerHandler implements Runnable {
         socketWriter.println("\n" + ServerMessages.ALREADY_ANSWERED);
     }
 
-    private void commandVerification(String message) throws IOException {
+    private boolean commandVerification(String message) throws IOException {
         if (message == null) {
             Command.QUIT.getCommandHandler().handle(this);
         }
         if (message.startsWith("/")) {
             Command.checkCommand(message, this);
-            receiveAnswers();
-            return;
+            //receiveAnswers();
+            return true;
         }
+        return false;
     }
 
     private boolean verifyAnswerCoordinates(String[] splitMessage, AnswerCoordinate answerCoordinate) {
@@ -216,6 +222,8 @@ public class PlayerHandler implements Runnable {
         initialMenu.printTitle(socketWriter);
         server.initialPrintBoard(this);
         printQuestions();
+        socketWriter.println(ServerMessages.GUESS);
+        socketWriter.flush();
     }
 
     public void printQuestions() {
@@ -265,5 +273,11 @@ public class PlayerHandler implements Runnable {
 
     public InitialMenu getInitialMenu() {
         return initialMenu;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        PlayerHandler comparator = (PlayerHandler) o;
+        return  comparator.getPoints() - this.getPoints();
     }
 }

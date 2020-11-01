@@ -52,11 +52,15 @@ public class GameManager {
             player.getInitialMenu().printTitle(player.getSocketWriter());
             GameBoard.printGameCard(player.getSocketWriter());
             player.printQuestions();
+            player.getSocketWriter().println(ServerMessages.GUESS);
+            player.getSocketWriter().flush();
         }
     }
 
     public void initialPrintBoard(PlayerHandler player) {
         GameBoard.printGameCard(player.getSocketWriter());
+
+
     }
 
     public void addPlayer(PlayerHandler player) {
@@ -130,6 +134,7 @@ public class GameManager {
     }
 
     public synchronized void endGame() throws IOException {
+        Collections.sort(listPlayers, PlayerHandler::compareTo);
         for (PlayerHandler player : listPlayers) {
             for (PlayerHandler listPlayer : listPlayers) {
                 player.getSocketWriter().println(listPlayer.getColor().concat(listPlayer.getName()) + ": " + listPlayer.getPoints() + " points");
@@ -140,7 +145,7 @@ public class GameManager {
         listPlayers.removeAll(listPlayers);
     }
 
-    public List<PlayerHandler> getListPlayers(){
+    public List<PlayerHandler> getListPlayers() {
         return listPlayers;
     }
 
