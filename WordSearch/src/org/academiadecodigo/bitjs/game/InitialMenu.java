@@ -1,8 +1,7 @@
-package org.academiadecodigo.bitjs;
+package org.academiadecodigo.bitjs.game;
 
+import org.academiadecodigo.bitjs.game.server.ServerMessages;
 import org.academiadecodigo.bootcamp.Prompt;
-import org.academiadecodigo.bootcamp.scanners.integer.IntegerInputScanner;
-import org.academiadecodigo.bootcamp.scanners.integer.IntegerRangeInputScanner;
 import org.academiadecodigo.bootcamp.scanners.menu.MenuInputScanner;
 import org.academiadecodigo.bootcamp.scanners.string.StringInputScanner;
 
@@ -43,7 +42,7 @@ public class InitialMenu {
 
         );*/
 
-        socketWriter.print(Colors.TITLE.concat(
+        socketWriter.print(Color.TITLE.concat(
                 "██╗    ██╗██████╗██████╗██████╗     ██████████████╗█████╗██████╗ ████████╗  ██╗\n" +
                         "██║    ████╔═══████╔══████╔══██╗    ██╔════██╔════██╔══████╔══████╔════██║  ██║\n" +
                         "██║ █╗ ████║   ████████╔██║  ██║    ████████████╗ █████████████╔██║    ███████║\n" +

@@ -1,4 +1,7 @@
-package org.academiadecodigo.bitjs;
+package org.academiadecodigo.bitjs.game.server;
+
+import org.academiadecodigo.bitjs.game.Color;
+import org.academiadecodigo.bitjs.game.InitialMenu;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,7 +16,9 @@ public class PlayerHandler implements Runnable {
     private GameManager server;
     private InitialMenu initialMenu;
     private String name = null;
-    private String color;
+    private Color color;
+    private Color boardColor;
+    //private String color;
 
     public PlayerHandler(Socket clientSocket, GameManager server) {
         this.clientSocket = clientSocket;
@@ -71,7 +76,7 @@ public class PlayerHandler implements Runnable {
         this.name = setName;
     }
 
-    private void chooseColor(){
+    /*private void chooseColor(){
         String setColor = Colors.values()[initialMenu.chooseColor()].getColor();
 
         while (server.checkColorExists(setColor)) {
@@ -80,6 +85,18 @@ public class PlayerHandler implements Runnable {
             setColor = Colors.values()[initialMenu.chooseColor()].getColor();
         }
         this.color = setColor;
+    }*/
+
+    private void chooseColor(){
+        Color setColor = Color.values()[initialMenu.chooseColor()];
+
+        while (server.checkColorExists(setColor)) {
+            socketWriter.println(ServerMessages.colorError2);
+            socketWriter.flush();
+            setColor = Color.values()[initialMenu.chooseColor()];
+        }
+        this.color = setColor;
+        this.boardColor = color.getPlayerBoundColor(color);
     }
 
     public void setUpIOStreams() {
@@ -105,9 +122,9 @@ public class PlayerHandler implements Runnable {
     public void printQuestions() {
         //Prints the questions of the game
         socketWriter.print(" " + "\n" +
-                Colors.YELLOW.concat(" 1. ") + Colors.BOLD.concat(" Is a protocol of LINK Layer") + "          " + Colors.YELLOW.concat(" 2. ") + Colors.BOLD.concat(" Architecture of a computer network") + "\n" +
-                Colors.YELLOW.concat(" 3. ") + Colors.BOLD.concat(" It´s one of the four pillars of OOP") + "  " + Colors.YELLOW.concat(" 4. ") + Colors.BOLD.concat(" Creator of the World Wide Web") + "\n" +
-                Colors.YELLOW.concat(" 5. ") + Colors.BOLD.concat(" It´s a verb") + "                          " + Colors.YELLOW.concat(" 6. ") + Colors.BOLD.concat(" It's a checked exception") + "\n");
+                Color.BOARD_YELLOW.concat(" 1. ") + Color.BOLD.concat(" Is a protocol of LINK Layer") + "          " + Color.BOARD_YELLOW.concat(" 2. ") + Color.BOLD.concat(" Architecture of a computer network") + "\n" +
+                Color.BOARD_YELLOW.concat(" 3. ") + Color.BOLD.concat(" It´s one of the four pillars of OOP") + "  " + Color.BOARD_YELLOW.concat(" 4. ") + Color.BOLD.concat(" Creator of the World Wide Web") + "\n" +
+                Color.BOARD_YELLOW.concat(" 5. ") + Color.BOLD.concat(" It´s a verb") + "                          " + Color.BOARD_YELLOW.concat(" 6. ") + Color.BOLD.concat(" It's a checked exception") + "\n");
         socketWriter.flush();
     }
 
@@ -116,7 +133,7 @@ public class PlayerHandler implements Runnable {
         return name;
     }
 
-    public String getColor() {
+    public Color getColor() {
         return color;
     }
 

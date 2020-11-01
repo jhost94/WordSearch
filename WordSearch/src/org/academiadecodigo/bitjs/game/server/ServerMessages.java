@@ -1,4 +1,4 @@
-package org.academiadecodigo.bitjs;
+package org.academiadecodigo.bitjs.game.server;
 
 public class ServerMessages {
     public static final String nameQuestion = "Choose your name: ";

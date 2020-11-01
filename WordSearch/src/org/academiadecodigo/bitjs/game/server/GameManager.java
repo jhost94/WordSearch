@@ -1,4 +1,7 @@
-package org.academiadecodigo.bitjs;
+package org.academiadecodigo.bitjs.game.server;
+
+import org.academiadecodigo.bitjs.game.Color;
+import org.academiadecodigo.bitjs.game.GameBoard;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -65,9 +68,9 @@ public class GameManager {
         return false;
     }
 
-    public synchronized boolean checkColorExists(String color) {   //true = existe
+    public synchronized boolean checkColorExists(Color color) {   //true = existe
         for (PlayerHandler player : listPlayers) {
-            if (color.equals(player.getColor())) {
+            if (color == player.getColor()) {
                 return true;
             }
         }
