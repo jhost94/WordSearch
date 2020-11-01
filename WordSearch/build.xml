@@ -1,14 +1,13 @@
 <?xml version="1.0" ?>
 
-<project name="JarBuild" basedir="." default="jarfile">
+<project name="WordSearch" basedir="." default="jarfile">
 
     <target name="init" description="Initializing properties">
-        <property name="project.name" value="JarBuild"/>
+        <property name="project.name" value="WordSearch"/>
         <property name="src.dir" value="src"/>
         <property name="build.dir" value="build"/>
         <property name="classes.dir" value="${build.dir}/classes"/>
         <property name="lib.dir" value="lib"/>
-        <property name="resources.dir" value="resources"/>
         <property name="main.class" value="org.academiadecodigo.bitjs.Main"/>
         <path id="classpath">
             <fileset dir="${lib.dir}" includes="**/*.jar"/>
@@ -35,9 +34,6 @@
                 <attribute name="Main-Class" value="${main.class}"/>
                 <attribute name="Class-Path" value="${lib.dir}"/>
             </manifest>
-            <fileset dir=".">
-                <include name="**/${resources.dir}/**"/>
-            </fileset>
             <zipgroupfileset dir="${lib.dir}" includes="*.jar"/>
         </jar>
     </target>
