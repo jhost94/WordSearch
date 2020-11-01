@@ -138,12 +138,10 @@ public class PlayerHandler implements Runnable, Comparable {
 
             answerCoordinate.setAnswered(true);
             addPoints(answerCoordinate.getPoints());
-            System.out.println(points);
 
             socketWriter.println(ServerMessages.CORRECT_ANSWER + "\n\r");
             socketWriter.flush();
             server.broadcast(splitMessage, this);
-
 
             return;
         }
