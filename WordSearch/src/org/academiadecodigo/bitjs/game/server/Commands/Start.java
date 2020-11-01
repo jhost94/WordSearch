@@ -3,9 +3,6 @@ package org.academiadecodigo.bitjs.game.server.Commands;
 import org.academiadecodigo.bitjs.game.server.PlayerHandler;
 import org.academiadecodigo.bitjs.game.server.ServerMessages;
 
-import java.io.IOException;
-
-
 public class Start implements CommandHandler{
     @Override
     public void handle(PlayerHandler player) {

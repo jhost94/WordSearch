@@ -3,7 +3,6 @@ package org.academiadecodigo.bitjs.game.server;
 import org.academiadecodigo.bitjs.game.AnswerCoordinate;
 import org.academiadecodigo.bitjs.game.Color;
 import org.academiadecodigo.bitjs.game.GameBoard;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -59,8 +58,6 @@ public class GameManager {
 
     public void initialPrintBoard(PlayerHandler player) {
         GameBoard.printGameCard(player.getSocketWriter());
-
-
     }
 
     public void addPlayer(PlayerHandler player) {
@@ -135,10 +132,25 @@ public class GameManager {
 
     public synchronized void endGame() throws IOException {
         Collections.sort(listPlayers, PlayerHandler::compareTo);
+
+
         for (PlayerHandler player : listPlayers) {
+            player.getSocketWriter().println("\033[H\033[2J"); //Condition to clear the screen
+            player.getSocketWriter().flush();
+
+            int index = 1;
+            String specialMessage = "";
             for (PlayerHandler listPlayer : listPlayers) {
-                player.getSocketWriter().println(listPlayer.getColor().concat(listPlayer.getName()) + ": " + listPlayer.getPoints() + " points");
+                if (index == 1) {
+                    specialMessage = "\uD83C\uDFC6  " + Color.BOLD.concat("THE WINNER IS:") + "  \uD83C\uDFC6\n\r";
+                } else if (index == 2) {
+                    specialMessage = "\n\r\uD83D\uDC4E  " + Color.BOLD.concat("THE LOSERS ARE:") + "  \uD83D\uDC4E\n\r";
+                }
+
+                player.getSocketWriter().println(specialMessage + index + ". " + listPlayer.getColor().concat(listPlayer.getName()) + " \uD83D\uDC49 " + listPlayer.getPoints() + " points ");
                 player.getSocketWriter().flush();
+                specialMessage = "";
+                index++;
             }
             player.closeStreams();
         }

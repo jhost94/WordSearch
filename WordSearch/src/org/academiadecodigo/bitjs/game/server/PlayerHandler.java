@@ -4,7 +4,6 @@ import org.academiadecodigo.bitjs.game.AnswerCoordinate;
 import org.academiadecodigo.bitjs.game.Color;
 import org.academiadecodigo.bitjs.game.InitialMenu;
 import org.academiadecodigo.bitjs.game.server.Commands.Command;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -66,7 +65,6 @@ public class PlayerHandler implements Runnable, Comparable {
             if (ready) {
                 break;
             }
-
         }
     }
 
@@ -81,16 +79,11 @@ public class PlayerHandler implements Runnable, Comparable {
     }
 
     public void start() throws IOException {
-        System.out.println("start");
-
-        /*socketWriter.println(ServerMessages.GUESS);
-        socketWriter.flush();*/
-
         while (!clientSocket.isClosed()) {
             receiveAnswers();
 
             if (allQuestionsAnswered()) {
-                //print points and winner to board
+                //print points and winner on the board
                 server.endGame();
                 break;
             }
@@ -99,11 +92,9 @@ public class PlayerHandler implements Runnable, Comparable {
     }
 
     public void receiveAnswers() throws IOException {
-
-
         String message = socketReader.readLine();
 
-        if(commandVerification(message)){
+        if (commandVerification(message)) {
             return;
         }
 
@@ -112,7 +103,6 @@ public class PlayerHandler implements Runnable, Comparable {
 
         //This block verifies if the first element of the string array is a question number
         if (!defaultAnswer.verifyQuestionNumber(splitMessage[0])) {
-            System.out.println("devia escrever o erro");
             socketWriter.println(ServerMessages.WRONG_IMPLEMENTATION);
             socketWriter.flush();
             return;
@@ -123,14 +113,12 @@ public class PlayerHandler implements Runnable, Comparable {
 
         if (!answerCoordinate.isAnswered()) {
             if (!verifyLength(splitMessage.length)) {
-                System.out.println("1 if");
                 socketWriter.println(ServerMessages.WRONG_IMPLEMENTATION);
                 socketWriter.flush();
                 return;
             }
 
             if (!verifyAnswerCoordinates(splitMessage, answerCoordinate)) {
-                System.out.println("2 if");
                 socketWriter.println(ServerMessages.WRONG_ANSWER);
                 socketWriter.flush();
                 return;
@@ -149,13 +137,12 @@ public class PlayerHandler implements Runnable, Comparable {
         socketWriter.println("\n" + ServerMessages.ALREADY_ANSWERED);
     }
 
-    private boolean commandVerification(String message) throws IOException {
+    private boolean commandVerification(String message) {
         if (message == null) {
             Command.QUIT.getCommandHandler().handle(this);
         }
         if (message.startsWith("/")) {
             Command.checkCommand(message, this);
-            //receiveAnswers();
             return true;
         }
         return false;
@@ -261,6 +248,10 @@ public class PlayerHandler implements Runnable, Comparable {
         return boardColor;
     }
 
+    public InitialMenu getInitialMenu() {
+        return initialMenu;
+    }
+
     public boolean isReady() {
         return ready;
     }
@@ -269,13 +260,9 @@ public class PlayerHandler implements Runnable, Comparable {
         this.ready = ready;
     }
 
-    public InitialMenu getInitialMenu() {
-        return initialMenu;
-    }
-
     @Override
     public int compareTo(Object o) {
         PlayerHandler comparator = (PlayerHandler) o;
-        return  comparator.getPoints() - this.getPoints();
+        return comparator.getPoints() - this.getPoints();
     }
 }

@@ -1,9 +1,7 @@
 package org.academiadecodigo.bitjs.game.server.Commands;
 
 import org.academiadecodigo.bitjs.game.server.PlayerHandler;
-
 import java.io.IOException;
-
 
 public class Quit implements CommandHandler {
     @Override

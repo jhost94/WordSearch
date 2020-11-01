@@ -1,7 +1,6 @@
 package org.academiadecodigo.bitjs.game;
 
 import org.academiadecodigo.bitjs.game.server.PlayerHandler;
-
 import java.io.PrintWriter;
 
 public class GameBoard {
@@ -51,7 +50,6 @@ public class GameBoard {
             horizontalAnswer(row1, col1, col2, sender.getBoardColor(), answerNumber);
             return;
         }
-
         verticalAnswer(col1, row1, row2, sender.getBoardColor(), answerNumber);
     }
 
@@ -86,6 +84,5 @@ public class GameBoard {
             default:
                 return ANSWER_6;
         }
-        //return null;
     }
 }

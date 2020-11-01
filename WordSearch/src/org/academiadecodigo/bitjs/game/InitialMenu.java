@@ -4,7 +4,6 @@ import org.academiadecodigo.bitjs.game.server.ServerMessages;
 import org.academiadecodigo.bootcamp.Prompt;
 import org.academiadecodigo.bootcamp.scanners.menu.MenuInputScanner;
 import org.academiadecodigo.bootcamp.scanners.string.StringInputScanner;
-
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;

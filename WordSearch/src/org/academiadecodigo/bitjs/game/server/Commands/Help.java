@@ -1,4 +1,5 @@
 package org.academiadecodigo.bitjs.game.server.Commands;
+
 import org.academiadecodigo.bitjs.game.server.PlayerHandler;
 import org.academiadecodigo.bitjs.game.server.ServerMessages;
 

@@ -27,9 +27,6 @@ public enum Color {
         return this.color + letter + this.close;
     }
 
-    public String getColor() {
-        return color;
-    }
     public Color getPlayerBoundColor(Color color){
         return Color.values()[color.ordinal() + 4];
     }

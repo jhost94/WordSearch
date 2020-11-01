@@ -14,11 +14,11 @@ public class ServerMessages {
     public static final String COLOR_ERROR = "That color doesn't exist! Choose another color! \uD83E\uDD37\u200D";
     public static final String COLOR_ERROR_2 = "Color already taken! Choose another color! \uD83E\uDD37\u200D";
     public static final String INVALID_COMMAND = "That command doesn't exist! ❌ Use \uD83D\uDC49"+ Color.BOLD.concat("/commands") + " to see all the available commands. \n\r";
-    public static final String INTRODUCTION = "Type \uD83D\uDC49 " + Color.BOLD.concat("/help") + " to see the game instructions, while you wait for other players! \uD83D\uDE03";
-    public static final String NEW_PLAYER = " has joined the game! \uD83D\uDE00 \uD83D\uDE4C";
+    public static final String INTRODUCTION = "Type \uD83D\uDC49 " + Color.BOLD.concat("/help") + " to see the game instructions, while you wait for other players! \uD83D\uDE03\n\r" + "Press " + Color.BOLD.concat("/start") + " when all your mates are ready!  ▶️";
+    public static final String NEW_PLAYER = " is ready to start the game! \uD83D\uDE00 \uD83D\uDE4C";
     public static final String PLAYER_NAMES = " other players are waiting to start the game! ⏱️\n\r";
     public static final String NOT_ENOUGH_PLAYERS = "You need at least two players to start the game! \uD83E\uDD37\u200D️\n\r\n\r";
-    public static final String NOT_ALL_READY = "⏱  Waiting for other players...\n\r\n\r";
+    public static final String NOT_ALL_READY = "\n\r⏱  Waiting for other players...\n\r\n\r";
     public static final String[] COLOR_OPTIONS = {"Blue \uD83D\uDC99", "Green \uD83D\uDC9A", "Orange \uD83E\uDDE1", "Pink \uD83D\uDC97"};
     public static final String LIST = "\n\r\n\r\uD83D\uDC49 " + Color.BOLD.concat("COMMANDS: ") + "\uD83D\uDC48\n\r\n\r" +
             "▶️  /start - starts the game immediately\n\r" +
@@ -37,5 +37,4 @@ public class ServerMessages {
             "To get the list of commands type:" + Color.BOLD.concat("/commands") + " or to get this message again type: " + Color.BOLD.concat("/help\n\r") +
             "\uD83C\uDF40 " + Color.BOLD.concat("GOOD LUCK!") +  " \uD83C\uDF40\n\r" +
             "\n\r";
-
 }
