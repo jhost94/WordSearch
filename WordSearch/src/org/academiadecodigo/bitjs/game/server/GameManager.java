@@ -1,5 +1,6 @@
 package org.academiadecodigo.bitjs.game.server;
 
+import org.academiadecodigo.bitjs.game.AnswerCoordinate;
 import org.academiadecodigo.bitjs.game.Color;
 import org.academiadecodigo.bitjs.game.GameBoard;
 
@@ -47,7 +48,12 @@ public class GameManager {
     public void printBoard() {
         for (PlayerHandler player : listPlayers) {
             GameBoard.printGameCard(player.getSocketWriter());
+            player.printQuestions();
         }
+    }
+
+    public void initialPrintBoard(PlayerHandler player) {
+        GameBoard.printGameCard(player.getSocketWriter());
     }
 
     public void addPlayer(PlayerHandler player) {
@@ -77,4 +83,29 @@ public class GameManager {
 
         return false;
     }
+
+    public synchronized void broadcast(String[] splitMessage, PlayerHandler sender) {
+        AnswerCoordinate answerCoordinate = AnswerCoordinate.values()[Integer.parseInt(splitMessage[0])];
+
+        GameBoard.verifyOrientation(splitMessage, answerCoordinate.getOrientation(), sender);
+        printBoard();
+    }
+
+    /*private void verifyAnswerCoordinates(String[] answer, PlayerHandler sender) {
+        AnswerCoordinate answerCoordinate = AnswerCoordinate.values()[Integer.parseInt(answer[0])];
+
+        if (!answer[1].equals(answerCoordinate.getInitialCoordinate()) || !answer[2].equals(answerCoordinate.getFinalCoordinate())) {
+            //wrong answer
+        }
+    }*/
+
+    /*private boolean verify(int questionNumber, int length){
+        if(length != 3){
+            return false;
+        }
+        if(questionNumber > 6 || questionNumber < 1){
+            return false;
+        }
+        return true;
+    }*/
 }

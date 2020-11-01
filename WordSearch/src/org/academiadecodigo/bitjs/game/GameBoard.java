@@ -1,5 +1,7 @@
 package org.academiadecodigo.bitjs.game;
 
+import org.academiadecodigo.bitjs.game.server.PlayerHandler;
+
 import java.io.PrintWriter;
 
 public class GameBoard {
@@ -38,7 +40,22 @@ public class GameBoard {
         }
     }
 
-    public static void horizontalAnswer(int row, int col1, int col2, Color color, int answerNumber) {
+    public static void verifyOrientation(String[] answer, String orientation ,PlayerHandler sender) {
+        int answerNumber = Integer.parseInt(answer[0]);
+        int row1 = Integer.parseInt(answer[1].split(",")[0]);
+        int row2 = Integer.parseInt(answer[2].split(",")[0]);
+        int col1 = Integer.parseInt(answer[1].split(",")[1]);
+        int col2 = Integer.parseInt(answer[2].split(",")[1]);
+
+        if (orientation.equals("horizontal")) {
+            horizontalAnswer(row1, col1, col2, sender.getColor(), answerNumber);
+            return;
+        }
+
+        verticalAnswer(col1, row1, row2, sender.getColor(), answerNumber);
+    }
+
+    private static void horizontalAnswer(int row, int col1, int col2, Color color, int answerNumber) {
         String[] lettersToShow = answerTranslation(answerNumber);
         int letterIndex = 0;
         for (int col = col1; col <= col2; col++) {
@@ -46,7 +63,7 @@ public class GameBoard {
         }
     }
 
-    public static void verticalAnswer(int col, int row1, int row2, Color color, int answerNumber) {
+    private static void verticalAnswer(int col, int row1, int row2, Color color, int answerNumber) {
         String[] lettersToShow = answerTranslation(answerNumber);
         int letterIndex = 0;
         for (int row = row1; row <= row2; row++) {
