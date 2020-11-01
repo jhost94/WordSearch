@@ -1,13 +1,16 @@
 package org.academiadecodigo.bitjs.game.server.Commands;
 
 import org.academiadecodigo.bitjs.game.server.PlayerHandler;
+import org.academiadecodigo.bitjs.game.server.ServerMessages;
 
 public enum Command {
     START("/start", new Start()),
     HELP("/help", new Help()),
-    POINTSLIST("pointslist", new PointsList()),
+    POINTSLIST("/pointslist", new PointsList()),
     COMMANDS("/commands", new Commands()),
     QUIT("/quit", new Quit());
+    //CONTROLQUIT(null, new Quit()),
+    //INVALIDCOMMAND("/",     );
 
     private String command;
     private CommandHandler commandHandler;
@@ -29,7 +32,10 @@ public enum Command {
         for (Command cmd : Command.values()){
             if (message.startsWith(cmd.getCommand())){
                 cmd.getCommandHandler().handle(player);
+                return;
             }
         }
+        player.getSocketWriter().println(ServerMessages.INVALID_COMMAND);
+        player.getSocketWriter().flush();
     }
 }

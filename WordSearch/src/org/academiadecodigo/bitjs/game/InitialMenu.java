@@ -19,15 +19,15 @@ public class InitialMenu {
 
     public String chooseName() {
         StringInputScanner nameQuestion = new StringInputScanner();
-        nameQuestion.setMessage(ServerMessages.nameQuestion);
+        nameQuestion.setMessage(ServerMessages.NAME_QUESTION);
         return this.menuPrompt.getUserInput(nameQuestion);
     }
 
     public int chooseColor() {
-        String[] options = ServerMessages.colorOptions;
+        String[] options = ServerMessages.COLOR_OPTIONS;
         MenuInputScanner scanner = new MenuInputScanner(options);
-        scanner.setMessage(ServerMessages.colorQuestion);
-        scanner.setError(ServerMessages.colorError);
+        scanner.setMessage(ServerMessages.COLOR_QUESTION);
+        scanner.setError(ServerMessages.COLOR_ERROR);
         return menuPrompt.getUserInput(scanner);
     }
 

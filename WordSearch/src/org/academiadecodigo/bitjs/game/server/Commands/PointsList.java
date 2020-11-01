@@ -8,6 +8,7 @@ public class PointsList implements CommandHandler{
     public void handle(PlayerHandler player) {
         for (PlayerHandler p : player.getServer().getListPlayers()){
             player.getSocketWriter().write( p.getColor().concat(p.getName()) + ": " + p.getPoints() + "\n\r");
+            player.getSocketWriter().flush();
         }
     }
 }

@@ -2,7 +2,6 @@ package org.academiadecodigo.bitjs.game.server;
 
 import org.academiadecodigo.bitjs.game.AnswerCoordinate;
 import org.academiadecodigo.bitjs.game.Color;
-import org.academiadecodigo.bitjs.game.GameBoard;
 import org.academiadecodigo.bitjs.game.InitialMenu;
 import org.academiadecodigo.bitjs.game.server.Commands.Command;
 
@@ -22,11 +21,13 @@ public class PlayerHandler implements Runnable {
     private Color color;
     private Color boardColor;
     private int points;
-    //private String color;
+    private boolean ready;
+
 
     public PlayerHandler(Socket clientSocket, GameManager server) {
         this.clientSocket = clientSocket;
         this.server = server;
+        this.ready = false;
         setUpIOStreams();
     }
 
@@ -45,9 +46,27 @@ public class PlayerHandler implements Runnable {
 
         chooseCredentials();
 
+        waitingRoom();
+
         start();
+    }
 
+    private void waitingRoom() throws IOException {
+        server.notifyNewPlayerJoined(this);
 
+        socketWriter.println(ServerMessages.INTRODUCTION);
+        socketWriter.flush();
+
+        while (!server.isStarted()) {
+
+            String message = socketReader.readLine();
+            commandVerification(message);
+
+            if (ready) {
+                break;
+            }
+
+        }
     }
 
     private void initializeMenu() throws IOException {
@@ -61,11 +80,14 @@ public class PlayerHandler implements Runnable {
     }
 
     public void start() throws IOException {
-        printInitialGameSet();
+        System.out.println("start");
+        //printInitialGameSet();
+
+        socketWriter.println("\nWRITE YOUR GUESS!!");
+        socketWriter.flush();
 
         while (!clientSocket.isClosed()) {
-            socketWriter.println("\nWRITE YOUR GUESS!!");
-            socketWriter.flush();
+
             receiveAnswers();
         }
 
@@ -73,71 +95,68 @@ public class PlayerHandler implements Runnable {
 
     public void receiveAnswers() throws IOException {
         String message = socketReader.readLine();
-
-        if (message.startsWith("/")){
-            Command.checkCommand(message,this);
-            receiveAnswers();
-            return;
-        }
-        System.out.println(message);
-        
-        //System.out.println(GameBoard.ANSWER_6[0] + " " + GameBoard.ANSWER_6[10]);
-        //System.out.println(GameBoard.board[3][2] + " " + GameBoard.board[13][2]);
+        commandVerification(message);
 
         String[] splitMessage = message.split(" ");
+        AnswerCoordinate defaultAnswer = AnswerCoordinate.ANSWER_1;
+
+        //This block verifies if the first element of the string array is a question number
+        if (!defaultAnswer.verifyQuestionNumber(splitMessage[0])) {
+            System.out.println("devia escrever o erro");
+            socketWriter.println(ServerMessages.WRONG_IMPLEMENTATION);
+            socketWriter.flush();
+            return;
+        }
+
+        int questionNumber = Integer.parseInt(splitMessage[0]);
         AnswerCoordinate answerCoordinate = AnswerCoordinate.values()[Integer.parseInt(splitMessage[0]) - 1];
 
-
         if (!answerCoordinate.isAnswered()) {
-
-            if (!verifyLengthAndQuestionNumber(Integer.parseInt(splitMessage[0]), splitMessage.length)) {
-                //invalid answer message
+            if (!verifyLength(questionNumber, splitMessage.length)) {
                 System.out.println("1 if");
-                socketWriter.println(ServerMessages.wrongImplementation);
+                socketWriter.println(ServerMessages.WRONG_IMPLEMENTATION);
                 socketWriter.flush();
-                receiveAnswers();
                 return;
             }
 
             if (!verifyAnswerCoordinates(splitMessage, answerCoordinate)) {
-                // incorrect answer message
                 System.out.println("2 if");
-                socketWriter.println(ServerMessages.wrongAnswer);
+                socketWriter.println(ServerMessages.WRONG_ANSWER);
                 socketWriter.flush();
-                receiveAnswers();
                 return;
             }
 
             answerCoordinate.setAnswered(true);
 
-            System.out.println("to print board");
+            socketWriter.println(ServerMessages.CORRECT_ANSWER + "\n\r");
+            socketWriter.flush();
             server.broadcast(splitMessage, this);
             return;
         }
 
-        socketWriter.println("\n" + ServerMessages.alreadyAnswered);
-        //Commands(message);
+        socketWriter.println("\n" + ServerMessages.ALREADY_ANSWERED);
     }
 
-//    private boolean verifyValidAnswer(String[] splitMessage) {
-//        System.out.println("0 = " + splitMessage[0] + "1 = " + splitMessage[1] + "2 = " + splitMessage[2] + "3 = " + splitMessage[3]);
-//
-//        return verifyLengthAndQuestionNumber(Integer.parseInt(splitMessage[0]), splitMessage.length);
-//    }
+    private void commandVerification(String message) throws IOException {
+        if (message == null) {
+            Command.QUIT.getCommandHandler().handle(this);
+        }
+        if (message.startsWith("/")) {
+            Command.checkCommand(message, this);
+            receiveAnswers();
+            return;
+        }
+    }
 
     private boolean verifyAnswerCoordinates(String[] splitMessage, AnswerCoordinate answerCoordinate) {
         if (!(splitMessage[1].equals(answerCoordinate.getInitialCoordinate()) && splitMessage[2].equals(answerCoordinate.getFinalCoordinate()))) {
             return false;
         }
-
         return true;
     }
 
-    private boolean verifyLengthAndQuestionNumber(int questionNumber, int length) {
+    private boolean verifyLength(int questionNumber, int length) {
         if (length != 3) {
-            return false;
-        }
-        if (questionNumber >= 7 || questionNumber <= 0) {
             return false;
         }
         return true;
@@ -147,28 +166,18 @@ public class PlayerHandler implements Runnable {
         String setName = initialMenu.chooseName();
 
         while (server.checkUsernameExists(setName)) {
-            socketWriter.println(ServerMessages.usernameError);
+            socketWriter.println(ServerMessages.USERNAME_ERROR);
             socketWriter.flush();
             setName = initialMenu.chooseName();
         }
         this.name = setName;
     }
 
-    /*private void chooseColor(){
-        String setColor = Colors.values()[initialMenu.chooseColor()].getColor();
-
-        while (server.checkColorExists(setColor)) {
-            socketWriter.println(ServerMessages.colorError2);
-            socketWriter.flush();
-            setColor = Colors.values()[initialMenu.chooseColor()].getColor();
-        }
-        this.color = setColor;
-    }*/
     private void chooseColor() {
         Color setColor = Color.values()[initialMenu.chooseColor()];
 
         while (server.checkColorExists(setColor)) {
-            socketWriter.println(ServerMessages.colorError2);
+            socketWriter.println(ServerMessages.COLOR_ERROR_2);
             socketWriter.flush();
             setColor = Color.values()[initialMenu.chooseColor()];
         }
@@ -190,11 +199,10 @@ public class PlayerHandler implements Runnable {
         clientSocket.close();
     }
 
-    private void printInitialGameSet() {
+    public void printInitialGameSet() {
         initialMenu.printTitle(socketWriter);
         server.initialPrintBoard(this);
         printQuestions();
-        //server.printBoard();
     }
 
     public void printQuestions() {
@@ -218,11 +226,27 @@ public class PlayerHandler implements Runnable {
         return socketWriter;
     }
 
-    public GameManager getServer(){
+    public GameManager getServer() {
         return server;
     }
 
-    public int getPoints(){
+    public int getPoints() {
         return points;
+    }
+
+    public Color getBoardColor() {
+        return boardColor;
+    }
+
+    public boolean isReady() {
+        return ready;
+    }
+
+    public void setReady(boolean ready) {
+        this.ready = ready;
+    }
+
+    public InitialMenu getInitialMenu() {
+        return initialMenu;
     }
 }

@@ -48,11 +48,11 @@ public class GameBoard {
         int col2 = Integer.parseInt(answer[2].split(",")[1]);
 
         if (orientation.equals("horizontal")) {
-            horizontalAnswer(row1, col1, col2, sender.getColor(), answerNumber);
+            horizontalAnswer(row1, col1, col2, sender.getBoardColor(), answerNumber);
             return;
         }
 
-        verticalAnswer(col1, row1, row2, sender.getColor(), answerNumber);
+        verticalAnswer(col1, row1, row2, sender.getBoardColor(), answerNumber);
     }
 
     private static void horizontalAnswer(int row, int col1, int col2, Color color, int answerNumber) {

@@ -18,10 +18,12 @@ public class GameManager {
     private ServerSocket serverSocket;
     private List<PlayerHandler> listPlayers;
     private ExecutorService fixedThreadPool;
+    volatile private boolean started;
 
     public GameManager() {
         listPlayers = Collections.synchronizedList(new LinkedList<>());
         fixedThreadPool = Executors.newFixedThreadPool(4);
+        this.started = false;
     }
 
     public void init() {
@@ -47,6 +49,7 @@ public class GameManager {
 
     public void printBoard() {
         for (PlayerHandler player : listPlayers) {
+            player.getInitialMenu().printTitle(player.getSocketWriter());
             GameBoard.printGameCard(player.getSocketWriter());
             player.printQuestions();
         }
@@ -90,25 +93,47 @@ public class GameManager {
         GameBoard.verifyOrientation(splitMessage, answerCoordinate.getOrientation(), sender);
         printBoard();
     }
-    private void verifyAnswerCoordinates(String[] answer, PlayerHandler sender) {
-        AnswerCoordinate answerCoordinate = AnswerCoordinate.values()[Integer.parseInt(answer[0])];
 
-        if (!answer[1].equals(answerCoordinate.getInitialCoordinate()) || !answer[2].equals(answerCoordinate.getFinalCoordinate())) {
-            //wrong answer
+    public synchronized void notifyNewPlayerJoined(PlayerHandler player) {
+        String playerName = player.getColor().concat(player.getName());
+
+        for (PlayerHandler listPlayer : listPlayers) {
+            if (listPlayer == player) {
+                player.getSocketWriter().println(getPlayersNames());
+                player.getSocketWriter().flush();
+                continue;
+            }
+            listPlayer.getSocketWriter().println(playerName + ServerMessages.NEW_PLAYER);
+            listPlayer.getSocketWriter().flush();
         }
+
     }
 
-    private boolean verify(int questionNumber, int length){
-        if(length != 3){
-            return false;
-        }
-        if(questionNumber > 6 || questionNumber < 1){
-            return false;
+    private synchronized String getPlayersNames() {
+        return "\n\r" + (listPlayers.size() - 1) + ServerMessages.PLAYER_NAMES;
+    }
+
+    public synchronized boolean seePlayersReady() {
+        for (PlayerHandler listPlayer : listPlayers) {
+            if (!listPlayer.isReady()) {
+                return false;
+            }
         }
         return true;
     }
 
+    public synchronized void startGame() {
+        started = true;
+        for (PlayerHandler listPlayer : listPlayers) {
+            listPlayer.printInitialGameSet();
+        }
+    }
+
     public List<PlayerHandler> getListPlayers(){
         return listPlayers;
+    }
+
+    public boolean isStarted() {
+        return started;
     }
 }

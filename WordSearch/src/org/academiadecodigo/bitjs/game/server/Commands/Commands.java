@@ -14,11 +14,12 @@ public class Commands implements CommandHandler{
     }
 
     private void init(){
-        list =  "/start starts the game immediately\n\r" +
-                "/help shows you the instructions\n\r" +
-                "/pointslist shows you the current player list and their score\n\r" +
-                "/commands shows you this\n\r" +
-                "/quit quits the game\n\r";
+        list =  "COMMANDS: \n\r" +
+                "/start - starts the game immediately\n\r" +
+                "/help - shows you the instructions\n\r" +
+                "/pointslist - shows you the current player list and their score\n\r" +
+                "/commands - shows you command list\n\r" +
+                "/quit - quits the game\n\r";
     }
     @Override
     public void handle(PlayerHandler player){
