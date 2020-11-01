@@ -49,6 +49,8 @@ public class GameManager {
 
     public void printBoard() {
         for (PlayerHandler player : listPlayers) {
+            player.getSocketWriter().println("\033[H\033[2J"); //Condition to clear the screen
+            player.getSocketWriter().flush();
             player.getInitialMenu().printTitle(player.getSocketWriter());
             GameBoard.printGameCard(player.getSocketWriter());
             player.printQuestions();

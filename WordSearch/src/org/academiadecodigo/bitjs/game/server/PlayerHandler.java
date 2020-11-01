@@ -81,9 +81,8 @@ public class PlayerHandler implements Runnable {
 
     public void start() throws IOException {
         System.out.println("start");
-        //printInitialGameSet();
 
-        socketWriter.println("\nWRITE YOUR GUESS!!");
+        socketWriter.println(ServerMessages.GUESS);
         socketWriter.flush();
 
         while (!clientSocket.isClosed()) {
