@@ -19,6 +19,7 @@ public class ServerMessages {
     public static final String PLAYER_NAMES = " other players are waiting to start the game! ⏱️\n\r";
     public static final String NOT_ENOUGH_PLAYERS = "You need at least two players to start the game! \uD83E\uDD37\u200D️\n\r\n\r";
     public static final String NOT_ALL_READY = "\n\r⏱  Waiting for other players...\n\r\n\r";
+    public static final String SERVER_FULL = "Server is already running a game, you can't connect right now!";
     public static final String[] COLOR_OPTIONS = {"Blue \uD83D\uDC99", "Green \uD83D\uDC9A", "Orange \uD83E\uDDE1", "Pink \uD83D\uDC97"};
     public static final String LIST = "\n\r\n\r\uD83D\uDC49 " + Color.BOLD.concat("COMMANDS: ") + "\uD83D\uDC48\n\r\n\r" +
             "▶️  /start - starts the game immediately\n\r" +

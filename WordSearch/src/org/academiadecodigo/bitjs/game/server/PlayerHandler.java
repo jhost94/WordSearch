@@ -57,7 +57,7 @@ public class PlayerHandler implements Runnable, Comparable {
         socketWriter.println(ServerMessages.INTRODUCTION);
         socketWriter.flush();
 
-        while (!server.isStarted()) {
+        /*while (!server.isStarted()) {
 
             String message = socketReader.readLine();
             commandVerification(message);
@@ -65,7 +65,7 @@ public class PlayerHandler implements Runnable, Comparable {
             if (ready) {
                 break;
             }
-        }
+        }*/
     }
 
     private void initializeMenu() throws IOException {
@@ -88,7 +88,6 @@ public class PlayerHandler implements Runnable, Comparable {
                 break;
             }
         }
-
     }
 
     public void receiveAnswers() throws IOException {
@@ -98,43 +97,46 @@ public class PlayerHandler implements Runnable, Comparable {
             return;
         }
 
-        String[] splitMessage = message.split(" ");
-        AnswerCoordinate defaultAnswer = AnswerCoordinate.ANSWER_DEFAULT;
+        if (ready) {
 
-        //This block verifies if the first element of the string array is a question number
-        if (!defaultAnswer.verifyQuestionNumber(splitMessage[0])) {
-            socketWriter.println(ServerMessages.WRONG_IMPLEMENTATION);
-            socketWriter.flush();
-            return;
-        }
+            String[] splitMessage = message.split(" ");
+            AnswerCoordinate defaultAnswer = AnswerCoordinate.ANSWER_DEFAULT;
 
-        int questionNumber = Integer.parseInt(splitMessage[0]);
-        AnswerCoordinate answerCoordinate = AnswerCoordinate.values()[questionNumber - 1];
-
-        if (!answerCoordinate.isAnswered()) {
-            if (!verifyLength(splitMessage.length)) {
+            //This block verifies if the first element of the string array is a question number
+            if (!defaultAnswer.verifyQuestionNumber(splitMessage[0])) {
                 socketWriter.println(ServerMessages.WRONG_IMPLEMENTATION);
                 socketWriter.flush();
                 return;
             }
 
-            if (!verifyAnswerCoordinates(splitMessage, answerCoordinate)) {
-                socketWriter.println(ServerMessages.WRONG_ANSWER);
+            int questionNumber = Integer.parseInt(splitMessage[0]);
+            AnswerCoordinate answerCoordinate = AnswerCoordinate.values()[questionNumber - 1];
+
+            if (!answerCoordinate.isAnswered()) {
+                if (!verifyLength(splitMessage.length)) {
+                    socketWriter.println(ServerMessages.WRONG_IMPLEMENTATION);
+                    socketWriter.flush();
+                    return;
+                }
+
+                if (!verifyAnswerCoordinates(splitMessage, answerCoordinate)) {
+                    socketWriter.println(ServerMessages.WRONG_ANSWER);
+                    socketWriter.flush();
+                    return;
+                }
+
+                answerCoordinate.setAnswered(true);
+                addPoints(answerCoordinate.getPoints());
+
+                socketWriter.println(ServerMessages.CORRECT_ANSWER + "\n\r");
                 socketWriter.flush();
+                server.broadcast(splitMessage, this);
+
                 return;
             }
 
-            answerCoordinate.setAnswered(true);
-            addPoints(answerCoordinate.getPoints());
-
-            socketWriter.println(ServerMessages.CORRECT_ANSWER + "\n\r");
-            socketWriter.flush();
-            server.broadcast(splitMessage, this);
-
-            return;
+            socketWriter.println("\n" + ServerMessages.ALREADY_ANSWERED);
         }
-
-        socketWriter.println("\n" + ServerMessages.ALREADY_ANSWERED);
     }
 
     private boolean commandVerification(String message) {
@@ -150,6 +152,7 @@ public class PlayerHandler implements Runnable, Comparable {
 
     private boolean verifyAnswerCoordinates(String[] splitMessage, AnswerCoordinate answerCoordinate) {
         if (!(splitMessage[1].equals(answerCoordinate.getInitialCoordinate()) && splitMessage[2].equals(answerCoordinate.getFinalCoordinate()))) {
+            points -= 5;
             return false;
         }
         return true;
@@ -214,9 +217,9 @@ public class PlayerHandler implements Runnable, Comparable {
     public void printQuestions() {
         //Prints the questions of the game
         socketWriter.print(" " + "\n" +
-                Color.BOARD_YELLOW.concat(" 1. ") + Color.BOLD.concat(" Is a protocol of LINK Layer - 5 POINTS") + "            " + Color.BOARD_YELLOW.concat(" 2. ") + Color.BOLD.concat(" Architecture of a computer network - 5 POINTS") + "\n" +
-                Color.BOARD_YELLOW.concat(" 3. ") + Color.BOLD.concat(" It´s one of the four pillars of OOP - 15 POINTS") + "   " + Color.BOARD_YELLOW.concat(" 4. ") + Color.BOLD.concat(" Creator of the World Wide Web - 10 POINTS") + "\n" +
-                Color.BOARD_YELLOW.concat(" 5. ") + Color.BOLD.concat(" It´s a HTTP verb - 10 POINTS") + "                      " + Color.BOARD_YELLOW.concat(" 6. ") + Color.BOLD.concat(" It's a checked exception - 10 POINTS") + "\n");
+                Color.BOARD_YELLOW.concat(" 1. ") + Color.BOLD.concat(" Is a protocol of LINK Layer - 15 POINTS") + "            " + Color.BOARD_YELLOW.concat(" 2. ") + Color.BOLD.concat(" Architecture of a computer network - 10 POINTS") + "\n" +
+                Color.BOARD_YELLOW.concat(" 3. ") + Color.BOLD.concat(" It´s one of the four pillars of OOP - 25 POINTS") + "    " + Color.BOARD_YELLOW.concat(" 4. ") + Color.BOLD.concat(" Creator of the World Wide Web - 20 POINTS") + "\n" +
+                Color.BOARD_YELLOW.concat(" 5. ") + Color.BOLD.concat(" It´s a HTTP verb - 15 POINTS") + "                       " + Color.BOARD_YELLOW.concat(" 6. ") + Color.BOLD.concat(" It's a checked exception - 10 POINTS") + "\n");
         socketWriter.flush();
     }
 

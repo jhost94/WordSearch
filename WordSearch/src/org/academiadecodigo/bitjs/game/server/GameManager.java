@@ -3,7 +3,11 @@ package org.academiadecodigo.bitjs.game.server;
 import org.academiadecodigo.bitjs.game.AnswerCoordinate;
 import org.academiadecodigo.bitjs.game.Color;
 import org.academiadecodigo.bitjs.game.GameBoard;
+
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
@@ -28,6 +32,7 @@ public class GameManager {
             serverSocket = new ServerSocket(DEFAULT_PORT);
 
             while (true) {
+
                 waitPlayers(serverSocket);
             }
 
@@ -38,6 +43,15 @@ public class GameManager {
 
     private void waitPlayers(ServerSocket serverSocket) throws IOException {
         Socket clientSocket = serverSocket.accept();
+
+        if (started) {
+            PrintWriter serverFull = new PrintWriter(clientSocket.getOutputStream());
+
+            serverFull.println(ServerMessages.SERVER_FULL);
+            serverFull.flush();
+
+            return;
+        }
 
         PlayerHandler player = new PlayerHandler(clientSocket, this);
         fixedThreadPool.submit(player);
@@ -154,6 +168,7 @@ public class GameManager {
             }
             player.closeStreams();
         }
+        //started = false;
         listPlayers.removeAll(listPlayers);
     }
 
