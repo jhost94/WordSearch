@@ -29,13 +29,13 @@ public class ServerMessages {
             "⏹️  /quit - quits the game\n\r\n\r";
     public static final String INSTRUCTIONS  = "\n\r \uD83E\uDD13 " + Color.BOLD.concat("INSTRUCTIONS:") + " \uD83E\uDD13 \n\r\n\r" +
             "In the game you search for the correct answers in the Word Soup \uD83C\uDF72 and compete with other players.\n\r" +
-            "In order to answer, a question, first you select it by typing its number, followed by its coordinates (row,column).\n\r" +
+            "In order to answer a question, first you select it by typing its number, followed by its coordinates (row,column).\n\r" +
             "From right to the left and from top to bottom.\n\r\n\r" +
             "\uD83D\uDC47 It should look like this \uD83D\uDC47\n\r\n\r" +
             Color.BOLD.concat("<question number> <first row>,<first column> <last row>,<last column>\n\r\n\r") +
             Color.BOLD.concat("Example: 2 1,10 1,12\n\r\n\r") +
             "There are only horizontal and vertical words.\n\r" +
-            "To get the list of commands type:" + Color.BOLD.concat("/commands") + " or to get this message again type: " + Color.BOLD.concat("/help\n\r") +
+            "To get the list of commands type: " + Color.BOLD.concat("/commands") + " or to get this message again type: " + Color.BOLD.concat("/help\n\r") +
             "\uD83C\uDF40 " + Color.BOLD.concat("GOOD LUCK!") +  " \uD83C\uDF40\n\r" +
             "\n\r";
 }
